@@ -1,0 +1,7 @@
+streamlit
+moviepy
+faster-whisper
+google-generativeai
+opencv-python
+python-dotenv
+numpy
