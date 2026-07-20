@@ -1,46 +1,32 @@
-from gradio_client import Client, handle_file
+from faster_whisper import WhisperModel
 import os
-import json  # Library wajib untuk membedah file JSON dari Gradio
-from dotenv import load_dotenv
 
-load_dotenv()
-
-# Kita tetap menerima model_size dari UI Streamlit Anda
 def transcribe_audio(audio_path, model_size="base"):
-    url = os.getenv("COLAB_URL")
-    
-    if not url:
-        print("Error: COLAB_URL belum diisi di file .env!")
-        return None
-
-    print("🚀 Mengirim audio ke Server Google Colab (GPU)...")
+    """
+    Melakukan transkripsi audio secara lokal menggunakan CPU.
+    """
+    print(f"🚀 Memulai transkripsi lokal dengan model Whisper ({model_size}) di CPU...")
     try:
-        client = Client(url)
+        # device="cpu" untuk menjalankan di perangkat lokal
+        # compute_type="int8" untuk optimasi performa dan RAM di CPU
+        model = WhisperModel(model_size, device="cpu", compute_type="int8")
         
-        # Menerima hasil dari Colab
-        result = client.predict(
-            audio_path=handle_file(audio_path),
-            api_name="/predict"
-        )
+        # Lakukan transkripsi
+        segments, info = model.transcribe(audio_path, beam_size=5)
         
-        print("✅ Respons diterima dari Colab, memproses data...")
+        print(f"✅ Transkripsi berhasil. Bahasa terdeteksi: '{info.language}' dengan probabilitas {info.language_probability:.2f}")
         
-        # --- SISTEM PENERJEMAH DATA GRADIO ---
-        
-        # Skenario 1: Jika Colab mengirimkan sebuah "alamat file .json"
-        if isinstance(result, str) and result.endswith('.json'):
-            with open(result, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            return data
+        # Konversi generator segments menjadi list of dictionary sesuai standar sebelumnya
+        transcript = []
+        for segment in segments:
+            transcript.append({
+                "start": segment.start,
+                "end": segment.end,
+                "text": segment.text
+            })
             
-        # Skenario 2: Jika Colab mengirimkan teks JSON mentah
-        if isinstance(result, str):
-            # Mencoba mengubah teks menjadi data Python
-            return json.loads(result)
-            
-        # Skenario 3: Jika Colab sudah berbaik hati mengirimkan data murni (List/Dict)
-        return result
+        return transcript
         
     except Exception as e:
-        print(f"❌ Gagal menghubungi Colab atau memproses data: {e}")
+        print(f"❌ Gagal melakukan transkripsi lokal: {e}")
         return None

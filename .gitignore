@@ -1,2 +1,7 @@
 .env
 venv
+temp/
+*.mp4
+*.pdf
+*.docx
+__pycache__/

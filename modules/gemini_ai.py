@@ -52,8 +52,14 @@ def analyze_transcript_for_clips(transcript_data, custom_instruction="Menarik", 
         clips_data = json.loads(response_text)
         
         # Pastikan kita hanya mengambil jumlah klip yang diminta (untuk keamanan)
-        return clips_data[:num_clips]
+        return {"status": "success", "data": clips_data[:num_clips]}
         
     except Exception as e:
-        print(f"Error Gemini: {e}")
-        return None
+        error_msg = str(e)
+        print(f"Error Gemini: {error_msg}")
+        
+        # Menangkap error spesifik kuota (429)
+        if "429" in error_msg or "quota" in error_msg.lower() or "rate-limit" in error_msg.lower():
+            return {"status": "error_quota", "message": "Kuota API Gemini Anda habis (Limit harian/menit tercapai). Silakan gunakan API Key lain atau tunggu beberapa saat."}
+            
+        return {"status": "error_general", "message": f"Gagal menganalisis dengan Gemini: {error_msg}"}
