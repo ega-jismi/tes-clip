@@ -597,7 +597,10 @@ elif st.session_state.current_page == "processing":
         # Menyesuaikan jumlah klip agar tidak ada ruang kosong yang aneh di desktop
         num_res = len(st.session_state.final_clips)
         
-        if num_res == 1:
+        if num_res == 0:
+            st.error("⚠️ Gagal membuat klip. Hal ini mungkin karena server kehabisan memori (RAM) saat merender video, API Gemini gagal merespons dengan benar, atau alat rendering tidak didukung di server hosting.")
+            st.info("💡 Saran: Coba unggah video dengan durasi yang lebih pendek, kurangi jumlah klip yang diminta, atau jalankan aplikasi ini secara lokal di PC Anda.")
+        elif num_res == 1:
             # Jika hanya 1 klip: Teks full-width, Video ditengah
             clip = st.session_state.final_clips[0]
             st.markdown(f"**{clip.get('title', 'Klip 1')}**")
