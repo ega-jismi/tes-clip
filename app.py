@@ -237,7 +237,7 @@ div[data-baseweb="number_input"] button {
 }
 
 [data-testid="stFileUploadDropzone"]::after {
-    content: "📥 Klik atau Tarik Video di Sini \\A \\A Maks. 500MB (MP4/MOV)";
+    content: "📥 Klik atau Tarik Video di Sini \\A \\A Maks.500MB (MP4/MOV)";
     white-space: pre-wrap;
     position: absolute;
     top: 50%;
@@ -524,7 +524,7 @@ elif st.session_state.current_page == "processing":
                 else:
                     clips_suggestion = gemini_result["data"]
                     # 4. Potong Video & Tambah Subtitle
-                    st.write("✂️ **Langkah 4/4:** Memotong video dan menambahkan subtitle...")
+                    st.write("✂️ Memotong video")
                     
                     final_clips = []
                     clip_progress = st.progress(0, text="Menyiapkan perenderan klip pertama...")
