@@ -2,6 +2,6 @@ streamlit
 moviepy
 faster-whisper
 google-genai
-opencv-python
+opencv-python-headless==4.9.0.80
 python-dotenv
 numpy
