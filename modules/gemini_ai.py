@@ -1,10 +1,15 @@
-import google.generativeai as genai
+from google import genai
 import os
 from dotenv import load_dotenv
 import json
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
+# Memuat variabel rahasia dari file .env
+load_dotenv()
+
+# Gunakan SDK google-genai yang baru
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Gunakan versi model yang terdaftar secara resmi
 MODEL_NAME = "gemini-2.5-flash" 
 
 def analyze_transcript_for_clips(transcript_data, custom_instruction="Menarik", num_clips=1, duration=30):
@@ -12,13 +17,10 @@ def analyze_transcript_for_clips(transcript_data, custom_instruction="Menarik", 
     Mengirim transkrip ke Gemini dengan instruksi jumlah dan durasi yang dinamis.
     """
     try:
-        model = genai.GenerativeModel(MODEL_NAME)
-        
         transcript_text = ""
         for item in transcript_data:
             transcript_text += f"[{item['start']:.2f} - {item['end']:.2f}] {item['text']}\n"
         
-        # PROMPT YANG DIPERBARUI: Menggunakan num_clips dan duration
         prompt = f"""
         Anda adalah editor video profesional.
         Tugas Anda:
@@ -40,18 +42,21 @@ def analyze_transcript_for_clips(transcript_data, custom_instruction="Menarik", 
         {transcript_text}
         """
         
-        response = model.generate_content(prompt)
+        # Panggilan SDK google-genai yang baru
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+        )
+        
         response_text = response.text.replace('```json', '').replace('```', '').strip()
         clips_data = json.loads(response_text)
         
-        # Pastikan kita hanya mengambil jumlah klip yang diminta (untuk keamanan)
         return {"status": "success", "data": clips_data[:num_clips]}
         
     except Exception as e:
         error_msg = str(e)
         print(f"Error Gemini: {error_msg}")
         
-        # Menangkap error spesifik kuota (429)
         if "429" in error_msg or "quota" in error_msg.lower() or "rate-limit" in error_msg.lower():
             return {"status": "error_quota", "message": "Kuota API Gemini Anda habis (Limit harian/menit tercapai). Silakan gunakan API Key lain atau tunggu beberapa saat."}
             
