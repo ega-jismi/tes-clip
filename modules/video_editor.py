@@ -4,13 +4,8 @@ import os
 import numpy as np
 
 def process_clip(input_video_path, start_time, end_time, output_filename, aspect_ratio="9:16", transcript=None):
-    """
-    Fungsi untuk memotong video, auto-crop berdasarkan rasio, dan menambah subtitle.
-    """
     try:
         video_full = VideoFileClip(input_video_path)
-        
-        # Proteksi durasi
         if start_time >= video_full.duration:
             start_time = max(0, video_full.duration - 5)
         if end_time > video_full.duration:
@@ -18,7 +13,6 @@ def process_clip(input_video_path, start_time, end_time, output_filename, aspect
             
         video = video_full.subclipped(start_time, end_time)
 
-        # 1. Hitung Dimensi Berdasarkan Aspect Ratio
         video_width = video.w
         video_height = video.h
         

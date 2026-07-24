@@ -2,13 +2,10 @@ from faster_whisper import WhisperModel
 import os
 
 def transcribe_audio(audio_path, model_size="base"):
-    """
-    Melakukan transkripsi audio secara lokal menggunakan CPU.
-    """
+    
     print(f"🚀 Memulai transkripsi lokal dengan model Whisper ({model_size}) di CPU...")
     try:
-        # device="cpu" untuk menjalankan di perangkat lokal
-        # compute_type="int8" untuk optimasi performa dan RAM di CPU
+       
         model = WhisperModel(model_size, device="cpu", compute_type="int8")
         
         # Lakukan transkripsi

@@ -2,18 +2,11 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import json
-
-# Memuat variabel rahasia dari file .env
 load_dotenv()
-
-# PERBAIKAN 1: Kita panggil NAMA VARIABEL-nya, bukan kuncinya langsung
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# PERBAIKAN 2: Gunakan versi model yang terdaftar secara resmi
 MODEL_NAME = "gemini-2.5-flash" 
 
-# PERUBAHAN: Ubah nama parameter menjadi custom_instruction
-# Perbarui parameter fungsi (menambahkan num_clips dan duration)
 def analyze_transcript_for_clips(transcript_data, custom_instruction="Menarik", num_clips=1, duration=30):
     """
     Mengirim transkrip ke Gemini dengan instruksi jumlah dan durasi yang dinamis.
